@@ -8,6 +8,11 @@
   - [Digital Subscriber Line](#digital-subscriber-line)
     - [Internet Service Provider](#internet-service-provider)
     - [How DSL works ?](#how-dsl-works-)
+  - [Cable Internet](#cable-internet)
+  - [Hybrid Fiber Coax](#hybrid-fiber-coax)
+  - [Fiber To Home](#fiber-to-home)
+  - [Dial-Up](#dial-up)
+  - [Satellite](#satellite)
 
 ## Access Networks
 Access networks are networks that physically connect end systems to the first router on a
@@ -59,3 +64,34 @@ signals that are out of the human voice and hearing range.
 
 Find a great video resource [here](https://www.youtube.com/watch?v=RLooclrz7wA).
 
+### Cable Internet
+- In the case of cable Internet, the TV cable company is the ISP and it relies
+  on the preexisting infrastructure of cable TV to grant Internet access.
+
+- It runs on coaxial cable. Coaxial cable has enough of a frequency range to
+  carry TV channels and a stream of upstream and downstream Internet.
+
+- However, cable Internet can be slower during peak hours, when a majority of
+  users are online at once. This is because cable Internet is a *shared broadcast
+  medium* : every signal that comes from the ISP is sent to every single home
+  regardless of which one it was meant for.
+
+### Hybrid Fiber Coax
+Cable internet working with coaxial cable and optic fiber.
+The fiber connects optical nodes that exist in every neighborhood to the ISP and coaxial cable
+further connects the nodes to the houses.
+
+### Fiber To Home
+Optic fiber cables are claimed to be the
+cleanest method to transmit data.
+
+### Dial-Up
+Dial-Up uses a modem over the telephone line, but does not fully utilize the
+spectrum of the transmission medium. It only uses the traditional voice
+channel frequencies. Hence, it is slower than DSL.
+Speed of 56kbps.
+
+### Satellite
+The Internet can also be accessed via satellites. This can be beneficial in
+remote areas where other physical access networks are not available.
+Average speed of 1mbps downstream and 256kbps upstream.
