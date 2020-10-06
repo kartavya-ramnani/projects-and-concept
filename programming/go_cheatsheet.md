@@ -231,6 +231,9 @@ Why use pointers ?
    value and a value that is not set.
 
 ### Times and Date
+
+[_time_date.go_](https://play.golang.org/p/V3qqkoqN5Ps)
+
 Go doesn’t use yyyy-mm-dd layout to format a time. Instead, you format a special layout parameter the same way as the time or date should be formatted.
 Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
 
