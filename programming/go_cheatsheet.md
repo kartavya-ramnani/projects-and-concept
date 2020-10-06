@@ -4,6 +4,27 @@ Go's mascot is the adorable gopher. [@egonelbre](https://github.com/egonelbre/go
 ![](https://raw.githubusercontent.com/egonelbre/gophers/master/.thumb/vector/friends/heart-hug.png) 
 ![](https://raw.githubusercontent.com/egonelbre/gophers/master/.thumb/vector/fairy-tale/witch-learning.png)
 
+# Table of contents
+
+- [Hello World](#hello-world)
+- [Variable Declaration and Assignment](#variable-declaration-and-assignment)
+- [Basic Data types](#basic-data-types)
+  - [Integer](#integer)
+  - [Byte, Rune, Characters](#byte-rune-characters)
+  - [Float](#float)
+  - [Complex](#complex)
+  - [Boolean](#boolean)
+- [Arrays](#arrays)
+- [Slices](#slices)
+- [Maps](#maps)
+- [Pointers](#pointers)
+- [Times and Date](#times-and-date)
+- [Flow Control](#flow-control)
+- [Commands](#commands)
+- [Good To Know](#good-to-know)
+- [References](#references)
+
+
 ### Hello World
 File names typically use snake_case. 
 
