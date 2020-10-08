@@ -258,8 +258,75 @@ Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
     fmt.Println(parsedTime.Format("January 2, 2006"))
 ```
 
+### Structs
+
+### Interfaces
+
 ### Flow Control
 
+#### if condition
+[_if_demo.go_](https://play.golang.org/p/CFhTrRXBlJU) : There are two types of if loops here, 
+1. One is your standard, run-of-the-mill conditional if
+1. The second is an if loop with a statement. 
+
+```go
+	// boilerplate
+	mapLiteral := map[string]int{
+		"January":  1,
+		"February": 2,
+	}
+	month := "February"
+	monthNum, ok := mapLiteral[month]
+
+	// Conditional if #1
+	if ok {
+		fmt.Println("Map contains : ", month)
+	} else if monthNum != 1 {
+		fmt.Println("Month is not January")
+	} else {
+		fmt.Println("Month Num : ", month, monthNum)
+	}
+
+	// if with statements #1
+	if _, ok := mapLiteral[month]; ok {
+		fmt.Println("Month exists in the map")
+	}
+	// if with statements #2
+	if monthNum, ok = mapLiteral["January"]; monthNum == 1 {
+		fmt.Println("Month is January")
+	}
+```
+
+#### for loop and How to while 
+For loop has three sections : Initialization, Condition, Afterthought (increment/decrement),
+in Go, all three are optional.
+
+
+#### switch
+
+### Functions
+
+### Errors, Panic and error handling
+
+### Concurrency
+
+#### go routines
+
+#### wait groups
+
+#### channels
+
+### Reflection
+
+### Testing
+
+### Snippets
+
+#### Accepting input from cli
+
+#### HTTP Programming
+
+#### File Handling
 
 ### Commands
 1. <code>go build hello_world.go</code> -> builds and generates executable file.
@@ -272,6 +339,8 @@ Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
 1. Go uses concurrent tricolor mark-and-sweep algorithm for garbage collection.
 1. Unsafe code is Go code that bypasses the type safety and the memory security of Go. Usually, something which happens in
 real time and uses pointers.
+1. Go works using the **m:n scheduler** (or M:N scheduler). 
+   It schedules goroutines, which are lighter than OS threads, using OS threads.
 
 ### References
 1. Use [Better Go Playground](https://chrome.google.com/webstore/detail/better-go-playground/odfhkelcmblecfdnboahphiafolojmpl?hl=en)
