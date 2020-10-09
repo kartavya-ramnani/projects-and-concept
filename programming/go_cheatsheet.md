@@ -19,7 +19,33 @@ Go's mascot is the adorable gopher. [@egonelbre](https://github.com/egonelbre/go
 - [Maps](#maps)
 - [Pointers](#pointers)
 - [Times and Date](#times-and-date)
+- [Structs](#structs)
+- [Interfaces](#interfaces)
 - [Flow Control](#flow-control)
+  - [if condition](#if-condition)
+  - [for loop and How to while](#for-loop-and-how-to-while)
+  - [switch](#switch)
+- [Functions](#functions)
+  - [normal func](#normal-func)
+  - [anonymous functions](#anonymous-functions)
+  - [multiple return values](#multiple-return-values)
+  - [function as return values and parameters](#function-as-return-values-and-parameters)
+  - [variadic functions](#variadic-functions)
+  - [scope](#scope)
+  - [init() function](#init-function)
+  - [type method](#type-method)
+- [Errors, Panic and error handling](#errors-panic-and-error-handling)
+- [Concurrency](#concurrency)
+  - [go routines](#go-routines)
+  - [wait groups](#wait-groups)
+  - [channels](#channels)
+- [Reflection](#reflection)
+- [Testing](#testing)
+- [Snippets](#snippets)
+  - [Accepting input from cli](#accepting-input-from-cli)
+  - [Regex and Pattern matching](#regex-and-pattern-matching)
+  - [HTTP Programming](#http-programming)
+  - [File Handling](#file-handling)
 - [Commands](#commands)
 - [Good To Know](#good-to-know)
 - [References](#references)
@@ -261,6 +287,13 @@ Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
 ### Structs
 
 ### Interfaces
+Go interface type defines the behavior of other types by specifying a set
+of methods that need to be implemented.
+
+Simply, interfaces are abstract types that define a set of functions that need to be
+implemented so that a type can be considered an instance of the interface.
+
+
 
 ### Flow Control
 
@@ -298,13 +331,190 @@ Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
 ```
 
 #### for loop and How to while 
-For loop has three sections : Initialization, Condition, Afterthought (increment/decrement),
+[_for_loops.go_](https://play.golang.org/p/VUu-qx4LCEC) : For loop has three sections : Initialization, Condition, Afterthought (increment/decrement),
 in Go, all three are optional.
 
+```go
+    // simple
+    for i := 0; i < 3; i++ {
+        fmt.Println("simple for : i is", i)
+    }
+    
+    i := 0
+    // while(true)
+    for {
+        fmt.Println("while : i is", i)
+        i++
+        if i > 5 {
+            break
+        }
+    }
+    
+    i = 0
+    // do...while(expression)
+    for ok := true; ok; ok = i < 1 {
+        fmt.Println("do-while : i is", i)
+        i++
+    }
+```
 
 #### switch
+[_switch.go_](https://play.golang.org/p/0OFs5hWpKTz) : 
+In go, switch cases do not need break statements because they do not fallthrough
+For explicit fallthrough,  the *fallthrough* keyword tells Go to execute the branch that follows the current one.
+
+```go
+	asString := "1"
+
+	switch asString {
+	case "1":
+		fmt.Println("One!")
+		fallthrough // will call Zero! as well.
+	case "0":
+		fmt.Println("Zero!")
+	default:
+		fmt.Println("Do not care!")
+	}
+```
 
 ### Functions
+
+#### normal func
+
+```go
+func simpleAdd(i, j int) int {
+	return i + j
+}
+func main() {
+	k := simpleAdd(5, 7)
+}
+```
+
+#### anonymous functions
+Anonymous functions can be defined inline without the need for a name and they are
+usually used for implementing things that require a small amount of code. They can also be called as *closures*.
+```go
+func main() {
+	// anonymous function
+	sqr := func(i int) int {
+		return i * i
+	}
+}
+```
+#### multiple return values
+```go
+// multiple return values
+func doubleSquare(i int) (int, int) {
+	return i * i, i * 2
+}
+
+// named return values
+func namedMinMax(x, y int) (min, max int) {
+	if x > y {
+		min = y
+		max = x
+	} else {
+		min = x
+		max = y
+	}
+	return
+}
+
+func main() {
+	k, sqr := doubleSquare(3)
+	min, max := namedMinMax(4,6)
+}
+```
+
+#### function as return values and parameters
+
+Function Returning functions :
+
+```go
+	// func returning func
+	// i and j here are completely independent and they maintain their values
+	i := funReturnFun()
+	j := funReturnFun()
+	fmt.Println("1:", i()) // 1: 1
+	fmt.Println("2:", i()) // 2: 4
+	fmt.Println("j1:", j())// j1: 1
+	fmt.Println("j2:", j())// j2: 4 
+	fmt.Println("3:", i()) // 3: 9 
+```
+Function as parameters : 
+```go
+// function as parameter
+func funFun(f func(int) int, v int) int {
+	return f(v)
+}
+// plain old function
+func simpleSquare(i int) int {
+	return i * i
+}
+
+func main() {
+	k = funFun(simpleSquare, 5)
+}
+
+```
+#### variadic functions
+Go also supports variadic functions, which are functions that accept a variable number of
+arguments.
+```go
+// variadic function
+func varFunc(input ...string) {
+    fmt.Println(input)
+}
+
+func main() {
+	// calling variadic functions
+	varFunc("Hello", "World!")
+	varFunc([]string{"This", "Go Playground", "Is", "EPIC AF"}...)
+}
+```
+
+#### scope
+Go follows a simple rule that states that **functions**, **variables**, **types** and so forth that begin
+with an *Uppercase* letter are public, whereas functions, variables, types, and so on that
+begin with a lowercase letter are private which means they can  be strictly used and called internally in a package.
+
+#### init() function
+Every Go package can optionally have a private function named init() that is
+automatically executed at the beginning of the execution time.
+```go
+func init() {
+    fmt.Println("init is auto-executed at the beginning of execution time")
+}
+func main() {
+	fmt.Println("main function gets called")
+}
+```
+The console output will look like :
+```
+init is auto-executed at the beginning of execution time
+main function gets called
+```
+#### type method
+Methods defined on a type. A type method is a function with a special receiver argument.
+The receiver appears in its own argument list between the func keyword and the method name.
+In this example, the Abs method has a receiver of type Vertex named v.
+
+```go
+// type and type method
+type Vertex struct {
+	X, Y float64
+}
+// type method with receiver
+func (v Vertex) Abs() float64 {
+	return math.Sqrt(v.X*v.X + v.Y*v.Y)
+}
+
+func main() {
+	// type method,calling method Abs of type Vertex
+	v := Vertex{3, 4}
+	fmt.Println(v.Abs())
+}
+```
 
 ### Errors, Panic and error handling
 
@@ -323,6 +533,8 @@ in Go, all three are optional.
 ### Snippets
 
 #### Accepting input from cli
+
+#### Regex and Pattern matching
 
 #### HTTP Programming
 
