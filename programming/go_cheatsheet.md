@@ -285,6 +285,93 @@ Please find formats [here](https://golang.org/pkg/time/#pkg-constants).
 ```
 
 ### Structs
+When you need to group various types of variables and create a
+new handy type, you can use a structure. The various elements of a structure are called the
+fields of the structure. Struct zero value is an initialized struct with fields of zero values.
+
+[_structs_demo.go_](https://play.golang.org/p/H4ywnmO9VUV)
+
+Defining Structs : 
+```go
+// BMI : Body mass index struct with json tags (talked about later)
+type BMI struct {
+	Person  string
+	Height  int         // cms
+	Weight  int         // kgs
+	Contact Contact     // nested struct
+}
+
+// Contact : struct with contact information (but with no tags)
+type Contact struct {
+	Phone string
+	Email string
+}
+```
+Initializing and Accessing Struct:
+
+```go
+func main() {
+
+	// literals
+	person1 := BMI{Person: "John Doe", Height: 178, Weight: 80, Contact: Contact{Phone: "1234555", Email: "a@a.com"}}
+	person2 := BMI{"Lorem Ipsum", 168, 75, Contact{}}
+
+	// accessing and setting fields. Structs are mutable.
+	person2.Weight = 77
+
+	// ommitted fields are of zero value
+	person3 := BMI{Person: "John Doe", Height: 178}
+	fmt.Println("Weight of person3 :", person3.Weight) // 0 int zero value
+
+	// pointer to struct
+	person4 := &BMI{Person: "John Doe", Height: 178, Weight: 80, Contact: Contact{Phone: "1234555", Email: "a@a.com"}}
+	fmt.Println("Person :", person4)
+	// access values in pointers
+	// Both ways are correct, the pointers are automatically dereferenced.
+	fmt.Println((*person4).Contact.Phone, person4.Contact.Phone)
+}
+```
+
+#### Tags
+Go struct tags are annotations that appear after the type in a Go struct declaration.
+A struct tag looks like this, with the tag offset with backtick <code>`</code> characters:
+```go
+// BMI : Body mass index struct with json tags (talked about later)
+type BMI struct {
+	Person  string  `json:"person"`
+	Height  int     `json:"hgt"`         // cms
+	Weight  int     `json:"wgt"`         // kgs
+	Contact Contact `json:"contactInfo"` // nested struct
+}
+
+// Contact : struct with contact information (but with no tags)
+type Contact struct {
+	Phone string
+	Email string
+}
+
+func main() {
+	// We use json tags here for specifying the name of fields when struct is converted to json.
+	// We can also use omitempty with json tag to omit zero-valued fields.
+	out, err := json.MarshalIndent(person1, "", "  ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(string(out))
+	/** Response :
+		{
+	      "person": "John Doe",
+	      "hgt": 178,
+	      "wgt": 80,
+	      "contactInfo": {
+	        "Phone": "1234555", // same because no json tag
+	        "Email": "a@a.com" // same because no json tag
+	      }
+	    }
+	    **/
+}
+```
 
 ### Interfaces
 Go interface type defines the behavior of other types by specifying a set
@@ -378,7 +465,7 @@ For explicit fallthrough,  the *fallthrough* keyword tells Go to execute the bra
 ```
 
 ### Functions
-
+[_func_demo.go_](https://play.golang.org/p/q88v7UuPIKM)
 #### normal func
 
 ```go
