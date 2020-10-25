@@ -380,7 +380,95 @@ of methods that need to be implemented.
 Simply, interfaces are abstract types that define a set of functions that need to be
 implemented so that a type can be considered an instance of the interface.
 
+The biggest advantage you get from having and using an interface is that you can pass a
+variable of a type that implements that particular interface to any function that expects a
+parameter of that specific interface. 
 
+
+Under the hood, an interface value can be thought of as a tuple consisting of a value and a concrete type
+
+#### Type Assertion
+Type assertions help you to do two things. 
+1. Checking whether an interface value keeps a particular type. 
+2. When used this way, a type assertion returns two values: the
+underlying value and a bool value. The Boolean value tells you whether the type assertion was successful or not.
+```go
+	var myInt interface{} = 123
+	k, ok := myInt.(int) // type assertion
+	if ok {
+		fmt.Println("Success:", k)
+	}
+	v, ok := myInt.(float64)
+	if ok {
+		fmt.Println(v) // will not come here
+	} else {
+		fmt.Println("Failed without panicking!")
+	}
+```
+
+[_interface_demo.go_](https://play.golang.org/p/C28mR-CeQK_M)
+```go
+// Go Interface - `Shape`
+type Shape interface {
+	Area() float64
+	Perimeter() float64
+}
+
+// Struct type `Rectangle` - implements the `Shape` interface by implementing all its methods.
+type Rectangle struct {
+	Length, Width float64
+}
+
+func (r Rectangle) Area() float64 {
+	return r.Length * r.Width
+}
+
+func (r Rectangle) Perimeter() float64 {
+	return 2 * (r.Length + r.Width)
+}
+
+// Struct type `Circle` - implements the `Shape` interface by implementing all its methods.
+type Circle struct {
+	Radius float64
+}
+
+func (c Circle) Area() float64 {
+	return math.Pi * c.Radius * c.Radius
+}
+
+func (c Circle) Perimeter() float64 {
+	return 2 * math.Pi * c.Radius
+}
+
+func (c Circle) Diameter() float64 {
+	return 2 * c.Radius
+}
+
+// interfaces
+func main() {
+
+	var s Shape = Circle{5.0}
+	Calculate(s)
+
+	s = Rectangle{4.0, 6.0}
+	Calculate(s)
+
+}
+
+func Calculate(x Shape) {
+	// type assertion
+	_, ok := x.(Circle)
+	if ok {
+		fmt.Println("Is a Circle!")
+	}
+	v, ok := x.(Rectangle)
+	if ok {
+		fmt.Println("Is a Rectangle:", v)
+	}
+	fmt.Println(x.Area())
+	fmt.Println(x.Perimeter())
+}
+```
 
 ### Flow Control
 
@@ -605,15 +693,129 @@ func main() {
 
 ### Errors, Panic and error handling
 
+
 ### Concurrency
+Go offers its own unique and innovative way of achieving concurrency, which comes in the
+form of goroutines and channels.
+
+Concurrency and Parallelism are **NOT** the same. Parallelism is the simultaneous execution of multiple entities of some kind, whereas concurrency is a way of structuring your components so that they can be executed independently when possible.
 
 #### go routines
+Goroutines are the smallest Go entities that can be executed on their own in a Go program.
+
+##### go routines vs threads
+A goroutine is the minimum Go entity that can be executed concurrently. Goroutines live in UNIX threads that live in UNIX processes.
+Goroutines are lighter than threads, which, in turn, are lighter than processes.
+
+[_goroutines_demo.go_](https://play.golang.org/p/r82JlnsHSLW) : The following code launches 10 goroutines.
+```go
+	count := 10
+	// please do not assume that goroutines will be created in order.
+	for i := 0; i < count; i++ {
+		go func(x int) {
+			fmt.Printf("%d ", x)
+		}(i)
+	}
+
+	// this is used to wait for the goroutines to be finished before closing the program.
+	// otherwise the program would have closed without all the goroutines completed.
+	// better way to implement this is using a WaitGroup.
+	time.Sleep(time.Second)
+```
 
 #### wait groups
+A WaitGroup is used to wait for a collection of Goroutines to finish executing. The control is blocked until all Goroutines finish executing.
+
+[_waitgroup_demo.go_](https://play.golang.org/p/lwdVcsiUAgi)
+
+```go
+func main() {
+	no := 3
+	var wg sync.WaitGroup
+	for i := 0; i < no; i++ {
+		wg.Add(1)
+		go process(i, &wg)
+	}
+	wg.Wait()
+	fmt.Println("All go routines finished executing")
+}
+
+func process(i int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	fmt.Println("started Goroutine ", i)
+	time.Sleep(2 * time.Second)
+	fmt.Printf("Goroutine %d ended\n", i)
+}
+```
+
+When the number of sync.Add() calls and sync.Done() calls are equal, everything will
+be fine in your programs. 
+
+However, when you call <code>sync.Add(1)</code> function n+1 times while sync.Done() only n times, this leads to <code>fatal error: all goroutines are asleep - deadlock!</code>
+
+When you call <code>sync.Add(1)</code> function n times while you call sync.Done() n+1 times, this leads to <code>panic: sync: negative WaitGroup counter.</code>
+
 
 #### channels
+Channels can get data from goroutines in a concurrent and efficient way. 
+It is a communication mechanism that allows goroutines to exchange data, among other things.
 
 ### Reflection
+Reflection is an advanced Go feature that allows you to dynamically learn the type of an
+arbitrary object, as well as information about its structure. Go offers the <code>reflect</code> package
+for working with reflection.
+
+The concrete type of interface{} is represented by <code>reflect.Type</code> and the underlying value is represented by <code>reflect.Value</code>. 
+There are two functions <code>reflect.TypeOf()</code> and <code>reflect.ValueOf()</code> which return the <code>reflect.Type</code> and <code>reflect.Value</code> respectively.
+
+The <code>NumField()</code> method returns the number of fields in a struct and the <code>Field(i int)</code> method returns the <code>reflect.Value</code> of the ith field.
+
+[_reflection_demo.go_](https://play.golang.org/p/mTgTVVOb6R4) :
+```go
+type A struct {
+	X int
+	Y float64
+	Z string
+}
+
+func main() {
+
+	a := A{100, 200.12, "Struct a"}
+	// A type, value, kind :  main.A {100 200.12 Struct a} struct
+	fmt.Println("A type, value, kind : ", reflect.TypeOf(a), reflect.ValueOf(a), reflect.TypeOf(a).Kind())
+
+        // real-life example
+	PrintFieldsIfStruct(a)
+
+}
+
+// PrintFieldsIfStruct prints fields of a struct if the input kind is a struct
+func PrintFieldsIfStruct(q interface{}) {
+	if reflect.ValueOf(q).Kind() == reflect.Struct {
+		v := reflect.ValueOf(q)
+		// for a, will print : Number of fields 3
+		fmt.Println("Number of fields", v.NumField())
+		for i := 0; i < v.NumField(); i++ {
+			f := v.Field(i)
+			n := v.Type().Field(i).Name
+			t := f.Type().String()
+			fmt.Printf("Name: %s  Kind: %s  Type: %s\n", n, f.Kind(), t)
+			/**
+			    Name: X  Kind: int  Type: int
+			    Name: Y  Kind: float64  Type: float64
+			    Name: Z  Kind: string  Type: string
+			 **/
+
+		}
+	}
+}
+```
+
+#### Pitfalls of reflection
+1. Extensive use of reflection will make your programs hard to read and maintain.
+1. Reflection can make your program slower because it is a dynamic code.
+1. Reflection errors cannot be caught at build time and are reported at
+   runtime as panics, which means that reflection errors can potentially crash your programs.
 
 ### Testing
 
@@ -630,7 +832,7 @@ func main() {
 ### Commands
 1. <code>go build hello_world.go</code> -> builds and generates executable file.
 <code> ./hello_world </code> to run the executable file.
-1. <code>go run hello_world.go</code>code> -> builds and runs the go file. (generates and deletes the executable file)
+1. <code>go run hello_world.go</code> -> builds and runs the go file. (generates and deletes the executable file)
 1. <code>go tool compile hello_world.go</code> -> compiles and generates the object file (.o extension)
 1. <code>GODEBUG=gctrace=1 go run hello_world.go</code> -> print analytical data about the operation of the garbage collector.
 
@@ -642,5 +844,14 @@ real time and uses pointers.
    It schedules goroutines, which are lighter than OS threads, using OS threads.
 
 ### References
+1. Mastering Go by Mihalis Tsoukalos
+1. golangbot.com has excellent reference blogs.
 1. Use [Better Go Playground](https://chrome.google.com/webstore/detail/better-go-playground/odfhkelcmblecfdnboahphiafolojmpl?hl=en)
 on go playground for more features.
+
+### Conclusion
+Made with ♡ by [Kartavya Ramnani](https://github.com/kartavya-ramnani). 
+
+If you found this useful, please ☆ the repository to encourage me to keep updating this.
+
+You can find me on [Linkedin](https://www.linkedin.com/in/kartavya9/), [Twitter](https://twitter.com/KartavyaRamnani), [StackOverflow](https://stackoverflow.com/story/kartavya9). 
