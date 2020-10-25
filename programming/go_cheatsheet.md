@@ -20,7 +20,9 @@ Go's mascot is the adorable gopher. [@egonelbre](https://github.com/egonelbre/go
 - [Pointers](#pointers)
 - [Times and Date](#times-and-date)
 - [Structs](#structs)
+  - [Tags](#tags)
 - [Interfaces](#interfaces)
+  - [Type Assertion](#type-assertion)
 - [Flow Control](#flow-control)
   - [if condition](#if-condition)
   - [for loop and How to while](#for-loop-and-how-to-while)
@@ -37,9 +39,11 @@ Go's mascot is the adorable gopher. [@egonelbre](https://github.com/egonelbre/go
 - [Errors, Panic and error handling](#errors-panic-and-error-handling)
 - [Concurrency](#concurrency)
   - [go routines](#go-routines)
+    - [go routines vs threads](#go-routines-vs-threads)
   - [wait groups](#wait-groups)
   - [channels](#channels)
 - [Reflection](#reflection)
+  - [Pitfalls of reflection](#pitfalls-of-reflection)
 - [Testing](#testing)
 - [Snippets](#snippets)
   - [Accepting input from cli](#accepting-input-from-cli)
@@ -49,7 +53,7 @@ Go's mascot is the adorable gopher. [@egonelbre](https://github.com/egonelbre/go
 - [Commands](#commands)
 - [Good To Know](#good-to-know)
 - [References](#references)
-
+- [Conclusion](#conclusion)
 
 ### Hello World
 File names typically use snake_case. 
@@ -844,10 +848,15 @@ real time and uses pointers.
    It schedules goroutines, which are lighter than OS threads, using OS threads.
 
 ### References
-1. Mastering Go by Mihalis Tsoukalos
+1. [A Tour of Go](https://tour.golang.org/welcome/1) is a good starting point.
+1. [Go Documentation](https://golang.org/ref/spec), [Effective Go](https://golang.org/doc/effective_go.html), [Go Blog](https://blog.golang.org/).
+1. Mastering Go by Mihalis Tsoukalos is an excellent read.
 1. golangbot.com has excellent reference blogs.
 1. Use [Better Go Playground](https://chrome.google.com/webstore/detail/better-go-playground/odfhkelcmblecfdnboahphiafolojmpl?hl=en)
 on go playground for more features.
+1. Excellent talks : 
+    1. [Go Workshop by Dave Cheney](https://www.youtube.com/watch?v=gi7t6Pl9rxE)
+    1. [Go Best Practises by Brian Ketelsen](https://www.youtube.com/watch?v=MzTcsI6tn-0)
 
 ### Conclusion
 Made with ♡ by [Kartavya Ramnani](https://github.com/kartavya-ramnani). 
