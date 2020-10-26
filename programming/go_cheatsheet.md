@@ -759,10 +759,24 @@ However, when you call <code>sync.Add(1)</code> function n+1 times while sync.Do
 
 When you call <code>sync.Add(1)</code> function n times while you call sync.Done() n+1 times, this leads to <code>panic: sync: negative WaitGroup counter.</code>
 
-
 #### channels
 Channels can get data from goroutines in a concurrent and efficient way. 
 It is a communication mechanism that allows goroutines to exchange data, among other things.
+
+Create a new channel with <code>make(chan val-type)</code>. Channels are typed by the values they convey.
+Send a value into a channel using the channel <code><-syntax</code> and receive using <code><-channel</code>.
+
+Channels can be both **buffered** and **unbuffered**. Unbuffered means that they will only accept sends (chan <-) if there is a corresponding receive (<- chan) ready to receive the sent value. 
+Buffered channels accept a limited number of values without a corresponding receiver for those values.
+
+#### pipelines
+A pipeline is a virtual method for connecting goroutines and channels so that the output of
+one goroutine becomes the input of another goroutine using channels to transfer your data.
+
+Benefits :
+1. Constant data flow in your program, no goroutine and channel have to wait.
+1. Fewer variables are needed and therefore less memory space is used.
+1. Simplifies the design of the program and improves its maintainability.
 
 ### Reflection
 Reflection is an advanced Go feature that allows you to dynamically learn the type of an
@@ -850,6 +864,7 @@ real time and uses pointers.
 ### References
 1. [A Tour of Go](https://tour.golang.org/welcome/1) is a good starting point.
 1. [Go Documentation](https://golang.org/ref/spec), [Effective Go](https://golang.org/doc/effective_go.html), [Go Blog](https://blog.golang.org/).
+1. [Go By Example](https://gobyexample.com/) is an excellent alternative to this cheatsheet.
 1. Mastering Go by Mihalis Tsoukalos is an excellent read.
 1. golangbot.com has excellent reference blogs.
 1. Use [Better Go Playground](https://chrome.google.com/webstore/detail/better-go-playground/odfhkelcmblecfdnboahphiafolojmpl?hl=en)
