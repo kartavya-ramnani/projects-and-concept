@@ -1,0 +1,286 @@
+## Microservices
+
+### Introduction 
+Microservices are small, autonomous services that work together.
+
+#### Characteristics
+1. Small and focused on doing one thing well
+1. Autonomous :
+These services need to be able to change independently of each other, and be deployed by
+themselves without requiring consumers to change.
+
+#### Benefits
+1. **Technology Heterogeneity** : Allows to use the right tool for each job rather than one size fits all approach.
+
+1. **Resilience** : In a monolithic service, if the service fails, everything stops working. This does not happen with microservices.
+
+1. **Scaling** : With a large, monolithic service, we have to scale everything together.
+ With smaller services, we can just scale those services that need scaling, allowing us to run other parts of the system on smaller, less powerful hardware.
+
+1. **Ease of deployment** : We can make a change to a single service and deploy it independently of the rest of the system. This allows us to get our code deployed faster.
+
+1. **Organizational Alignment** : Microservices allow us to better align our architecture to our organization, 
+helping us minimize the number of people working on any one codebase to hit the sweet spot of team size and productivity.
+
+1. **Optimizing for Replaceability** : Replacing a monolith feels like a suicide mission. Easier to completely rewrite services when required, and just killing a service when it is no longer needed.
+
+#### Microservice vs Libraries
+
+1. Lose technology heterogenity
+1. Scaling gets curtailed
+1. Deployment complexity stays the same
+
+Shared libraries do have their place but not as a replacement for microservices.
+
+### Principles and Features
+
+#### Heroku's 12-factor application
+Set principles and guidelines for an application like [Heroku's 12 factor application](https://www.12factor.net/). 
+
+#### Required Standard
+Defining clear attributes that each service should have is one way of being clear as to where that balance sits.
+
+#### Monitoring
+It is essential that we are able to draw up coherent, cross-service views of our system health. This has to be a system-wide view, not a service-specific view.
+You might choose to adopt a push mechanism, where each service needs to push this data into a central location. (e.g : ELK, Graphite + Nagios)
+This includes logging as well.
+
+#### Interfaces
+Picking a few defined interface technologies helps integrate new consumers. Example : HTTP/REST, gRPC + ProtoBuf etc
+
+#### Architectural Safety
+We have to ensure that our services shield themselves accordingly from unhealthy, downstream calls.
+The more services we have that do not properly handle the potential failure of downstream
+calls, the more fragile our systems will be.
+
+#### Governance through code
+
+##### Exemplars
+If you have a set of standards or best practices you would like to encourage, then having exemplars that
+you can point people to is useful.
+
+##### Tailored Service Template
+By tailoring such a service template for your own set of development practices, you ensure
+that teams can get going faster, also that developers have to go out of their way to
+make their services badly behaved.
+
+#### Technical Debts
+Maintain a debt log that is reviewed regularly. It is important they are regularly tracked
+
+### Model a service
+
+#### What Maketh a service good ?
+
+##### Loose Coupling
+When services are loosely coupled, a change to one service should not require a change to
+another.
+
+##### High Cohesion
+We want related behavior to sit together, and unrelated behavior to sit elsewhere.
+
+#### Bounded Context
+The idea of bounded context is that any given domain consists of multiple bounded contexts,
+and residing within each are things that do not need to be communicated outside.
+
+##### Shared and Hidden Models
+Each service has an internal-only representation, and the external representation it exposes.
+
+##### Modules and services
+So once you have found your bounded contexts in your domain,
+make sure they are modeled within your codebase as modules, with shared and hidden models.
+
+**IMPORTANT**
+
+Once you become very proficient, you may decide to skip the step of keeping the bounded context modeled as a module
+within a more monolithic system, and jump straight for a separate service. When starting
+out, however, keep a new system on the more monolithic side; getting service boundaries
+wrong can be costly, so waiting for things to stabilize as you get to grips with a new
+domain is sensible.
+
+##### Nested Bounded Contexts
+There is a good chance that the bounded contexts which you find have multiple more bounded contexts inside them.
+
+For example :  A warehouse context will have order fulfillment, inventory management or goods receiving contexts inside it.
+
+
+### Integration between microservices
+Getting integration right is the single most important aspect of the technology associated with microservices in my opinion. Do it well, and your microservices retain their
+autonomy, allowing you to change and release them independent of the whole. Get it wrong, and disaster awaits.
+
+#### Keep API technology agnostic
+The one certainty is change, and it is best to not be strongly coupled with a technology.
+
+#### Keep it simple for consumers
+Having a beautifully factored microservice doesn't count for much if the cost of using it as a consumer is sky-high!
+Ideally, we’d like to allow our clients full freedom in their technology choice, but on the other hand, providing a client library can ease adoption.
+
+#### Hide Internal Implementation Detail
+We don’t want our consumers to be bound to our internal implementation. This leads to increased coupling.
+
+#### Interfacing with Customers
+
+##### Shared Database
+Problems :
+1. We are allowing external parties to view and bind to internal implementation details.
+1. If I decide to change my schema to better represent my data, or make my system easier to maintain, I can break my consumers.
+1. My consumers are tied to a specific technology choice.
+1. If consumers are directly manipulating the DB, then they have to own the associated logic. Any changes needs to be done everywhere.
+
+##### Synchronous vs Asynchronous
+With synchronous communication, a call is made to a remote server, which blocks until the operation completes. With asynchronous communication, the caller doesn't wait for
+the operation to complete before returning, and may not even care whether the operation completes at all.
+
+Asynchronous communication can be very useful for long running jobs, where keeping a connection open for a long period between the
+client and server is impractical. It also works very well when you need low latency, where blocking a call while waiting for the result can slow things down.
+
+Two different forms of arch :
+1. **Request/Response** :
+With request/response, a client initiates a
+request and waits for the response.
+1. **Event-based** : 
+Instead of a client initiating requests
+asking for things to be done, it instead says this thing happened and expects other parties
+to know what to do.
+
+##### Remote Procedural Calls
+Remote procedure call refers to the technique of making a local call and having it execute on a remote service somewhere.
+
+RPC implementations that allow you to generate client and server stubs help you
+get started very, very fast. This is often one of the main selling points of RPC: its ease of use.
+
+Java RMI is though not technologically agnostic and can prove to be very brittle. 
+
+##### REST 
+REpresentational State Transfer (REST) is an architectural style inspired by the Web.
+
+REST works on resources and HTTP verbs and can model real life situations well. It also facilitates HATEOAS. 
+
+Downsides to REST :
+1. Performance is an issue and it does not perform well with low latency requirements
+1. HTTP, while it can be suited well to large volumes of traffic, isn’t great for low-latency communications.
+
+With the advent of gRPC, internal service-to-service interactions are being moved to gRPC. 
+
+##### Technologies for Async
+Message brokers like RabbitMQ, ActiveMQ. The broker handles subscriptions, allowing  consumers to be informed when an event arrives.
+Kafka has become the most popular choice in recent times.
+
+##### Complexities with Event-driven architecture 
+Complexity of tracing bad requests, debugging issues and retrying failed requests.
+Creating message hospitals (or dead letter queues) for handling failed requests can turn to be complex and expensive.
+
+#### Services as State Machines
+Having the lifecycle of key domain concepts explicitly modeled is powerful. Not only do we have one place to deal with collisions of state (e.g., someone
+trying to update a customer that has already been removed), but we also have a place to attach behavior based on those state changes.
+
+#### DRY and the Perils of Code Reuse
+DRY: don’t repeat yourself.
+DRY more accurately means that we want to avoid duplicating our system behavior and knowledge.
+
+We pull duplicated code into abstractions that we can then call from multiple places. Perhaps we go as far as making a
+shared library that we can use everywhere!
+
+#### Versioning 
+
+##### Defer it for as long as possible
+The best way to reduce the impact of making breaking changes is to avoid making them in the first place.
+You can achieve much of this by picking the right integration technology.
+
+##### Catch Breaking Changes Early
+It’s crucial to make sure we pick up changes that will break consumers as soon as possible. 
+Consumer driven contracts can be the best way to go about this as well.
+
+##### Use semantic versioning
+With semantic versioning, each version number is in the form MAJOR.MINOR.PATCH.
+
+##### Coexist different endpoints
+The thing we want to avoid is forcing consumers to upgrade in lockstep with us. Coexist both the old and new interfaces in the same running service will help.
+
+##### Use Multiple Concurrent Service Versions
+Have different versions of the service live at the same time. For short periods of time, this makes sense but for long it doesn't.
+One can use flags or separate deployments or amazon people would agree to using Weblabs.
+
+#### Cross Platform (Browsers + Phones + Tablets + TVs)
+Although our core services — our core offering — might be the same, we need a way
+ to adapt them for the different constraints that exist for each type of interface. When we
+ look at different styles of user interface composition, we need to ensure that they address
+ this challenge.
+ 
+##### API Composition
+ Our APIs must be able to communicate with different platforms, but need to take care of different constraints 
+ and composing APIs might be one way of doing that.
+ 
+ Downsides :
+ 1. We have little ability to tailor the responses for different sorts of devices.
+ 1. This communication could also be fairly chatty. Opening lots of calls directly to services
+    can be quite intensive for mobile devices, and could be a very inefficient use of a
+    customer’s mobile plan!
+    
+##### Backends for Frontends
+A common solution to the problem of chatty interfaces with backend services, or the need
+to vary content for different types of devices, is to have a server-side aggregation
+endpoint, or API gateway. This can marshal multiple backend calls, vary and aggregate
+content if needed for different devices, and serve it up.
+
+The problem that can occur is that normally we’ll have one giant layer for all our services.
+This leads to everything being thrown in together, and suddenly we start to lose isolation
+of our various user interfaces, limiting our ability to release them independently.
+
+#### Integrating with Third Party Software
+Should I build, or should I buy? 
+
+Ans : Build if it is unique to what you do, and can be considered a strategic asset; buy if your use of the tool isn’t that special.
+
+##### Lack of control
+There is a lack of control when using 3rd party integrations. The trick is to bring the integration and customization work back on to your terms.
+
+##### Customization
+Whole lack of customization. Salesforce is an example with the persistence to use Apex language.
+
+#### The strangler pattern
+Incrementally migrate a legacy system by gradually replacing specific pieces of functionality with new applications and services.
+
+Incrementally replace specific pieces of functionality with new applications and services. Create a façade that intercepts requests going to the backend legacy system.
+The façade routes these requests either to the legacy application or the new services. Existing features can be migrated to the new system gradually, and consumers can continue using the same interface, unaware that any migration has taken place.
+
+### Deployment
+
+#### Continuous Integration
+The core goal is to keep everyone in sync with each other, which we achieve by making sure that newly checked-in code properly integrates with existing code.
+
+As part of this process, we often create artifact(s) that are used for further validation, such
+as deploying a running service to run tests against it.
+
+Benefits :
+1. Fast feedback to the quality of our code.
+1. Allows us to automate the creation of our binary artifacts.
+
+Checklist :
+1. Check in to mainline daily.
+1. Have a suite of test to validate changes.
+1. If build is broken, #1 priority should be to fix it.
+
+#### CI with microservices
+CI for monoliths bring about a lot of challenges.
+1. If I make a one-line change to a single service all the other services get verified and built.
+1. This also leads to consumption of a lot of time.
+1. If my one-line change to the user service breaks the build, no other changes can be made to the other services until that break is fixed.
+
+Preferred approach : have a single CI build per microservice, to allow us to quickly make and validate a change prior to deployment into production.
+
+#### Build Pipelines and Continuous Delivery
+There is a need to have multiple stages inside a build. This is to get better feedback, one stage to run your large set of fast tests and
+another for running a smaller set of large-scoped slower tests. Hence, we create a pipeline.
+
+This build pipeline concept gives us a nice way of tracking the progress of our software as it clears each stage, helping give us insight into the quality of our software.
+
+Continuous delivery is the approach whereby we get constant feedback on the production readiness of each and every check-in,
+and furthermore treat each and every check-in as a release candidate.
+
+Compile & Run fast tests -> large-scoped slow tests -> UAT -> Performance load testing -> Production (maybe few percent and then full fledged)
+
+#### When to not have one CI build per microservice
+When starting with a greenfield project and a lot of churn is possible, having one build per microservice can be difficult to maintain and manage.
+
+As service APIs stabilize, start moving them out into their own builds.
+(page 197)
