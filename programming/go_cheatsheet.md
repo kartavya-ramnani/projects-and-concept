@@ -695,6 +695,12 @@ func main() {
 }
 ```
 
+#### defer keyword
+* The <code>defer</code> keyword postpones the execution of a function until the surrounding function
+returns. 
+* Deferred functions are executed in last in, first out (LIFO) order after the return of the surrounding function.
+* You can use defer for logging or closing connections or freeing up resources.
+
 ### Errors, Panic and error handling
 
 
@@ -835,6 +841,15 @@ func PrintFieldsIfStruct(q interface{}) {
 1. Reflection errors cannot be caught at build time and are reported at
    runtime as panics, which means that reflection errors can potentially crash your programs.
 
+### Packages
+A Go package is a Go source file that begins with the package keyword followed by the name of the package.
+Packages are mainly used for grouping related functions, variables, and constants so that
+you can transfer them easily and use them in your own Go programs.
+
+You can also import external packages to be used in your file. If you import external packages, you have
+to use it. 
+#### Go Mod
+
 ### Testing
 
 ### Snippets
@@ -855,6 +870,9 @@ func PrintFieldsIfStruct(q interface{}) {
 1. <code>GODEBUG=gctrace=1 go run hello_world.go</code> -> print analytical data about the operation of the garbage collector.
 
 ### Good To Know
+1. Go does not have a preprocessor and does high-speed compilation. As a
+   consequence, Go can also be used as a scripting language.
+1. Go uses [static linking](https://cs-fundamentals.com/tech-interview/c/difference-between-static-and-dynamic-linking) by default. 
 1. Go uses concurrent tricolor mark-and-sweep algorithm for garbage collection.
 1. Unsafe code is Go code that bypasses the type safety and the memory security of Go. Usually, something which happens in
 real time and uses pointers.
